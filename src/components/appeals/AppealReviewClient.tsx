@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useState, useTransition } from 'react';
@@ -268,7 +269,7 @@ export default function AppealReviewClient({ appealFromProps, claimFromProps }: 
             <CardDescription>The AI has recommended to {appeal.status.toLowerCase()} this appeal.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>The automated validation process resulted in a recommendation to <strong>{appeal.status.toLowerCase()}</strong> this appeal. If you agree, confirm the decision.</p>
+            <p>The automated validation process resulted in a recommendation to <strong>{appeal.status.toLowerCase()}</strong> this appeal. Review the details and confirm or override the decision.</p>
             <Textarea
               placeholder="Optional comments if overriding or confirming AI decision..."
               value={agentComment}
@@ -277,13 +278,41 @@ export default function AppealReviewClient({ appealFromProps, claimFromProps }: 
               aria-label="Agent Comments for AI Decision"
             />
           </CardContent>
-          <CardFooter className="flex justify-end">
-             <Button onClick={() => handleAgentDecision(appeal.status as 'Approved' | 'Rejected')} variant="default" disabled={isSubmittingDecision || isLoadingValidation || isPending}>
-              <Send className="mr-2 h-4 w-4" /> Confirm Decision
+          <CardFooter className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
+            {/* Button to confirm the AI's current decision (Approve or Reject) */}
+            <Button 
+              onClick={() => handleAgentDecision(appeal.status as 'Approved' | 'Rejected')} 
+              variant={appeal.status === 'Approved' ? 'default' : 'destructive'}
+              disabled={isSubmittingDecision || isLoadingValidation || isPending}
+            >
+              {isSubmittingDecision ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+              ) : (
+                appeal.status === 'Approved' ? <ThumbsUp className="mr-2 h-4 w-4" /> : <ThumbsDown className="mr-2 h-4 w-4" />
+              )}
+              Confirm AI {appeal.status}
             </Button>
+
+            {/* If AI recommended 'Reject', show an option to 'Override & Approve' */}
+            {appeal.status === 'Rejected' && (
+              <Button 
+                onClick={() => handleAgentDecision('Approved')} 
+                className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                disabled={isSubmittingDecision || isLoadingValidation || isPending}
+              >
+                {isSubmittingDecision ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                ) : (
+                  <ThumbsUp className="mr-2 h-4 w-4" />
+                )}
+                Override & Approve
+              </Button>
+            )}
           </CardFooter>
         </Card>
       )}
     </div>
   );
 }
+
+    
