@@ -1,12 +1,14 @@
+
 "use client";
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, FileX2, Hourglass, CheckCircle2, ArrowRight } from 'lucide-react';
+import { FileText, FileX2, Hourglass, CheckCircle2, ArrowRight, Trash2 } from 'lucide-react';
 import type { Claim, Appeal } from '@/types';
-import { getRejectedClaims, getAppeals } from '@/lib/data';
+import { getRejectedClaims, getAppeals, resetApplicationData } from '@/lib/data';
+import { Separator } from '@/components/ui/separator';
 
 interface DashboardMetrics {
   totalClaims: number;
@@ -44,7 +46,7 @@ export default function DashboardPage() {
 
     // Assuming total claims = rejected claims for this demo, as we only deal with rejected ones.
     // In a real app, this would come from a different source.
-    const totalClaims = rejectedClaimsList.length; 
+    const totalClaims = rejectedClaimsList.length;
     const rejectedClaimsCount = rejectedClaimsList.length;
     const appealsInProgressCount = appealsList.filter(a => a.status === 'Pending Validation' || a.status === 'Needs Agent Review' || a.status === 'Info Requested').length;
     const decisionsMadeCount = appealsList.filter(a => a.status === 'Approved' || a.status === 'Rejected').length;
@@ -56,6 +58,15 @@ export default function DashboardPage() {
       decisionsMade: decisionsMadeCount,
     });
   }, []);
+
+  const handleResetData = () => {
+    if (typeof window !== 'undefined') {
+      if (window.confirm("Are you sure you want to reset all application data? This will clear localStorage and reload the page.")) {
+        resetApplicationData();
+        window.location.reload();
+      }
+    }
+  };
 
   return (
     <div className="container mx-auto py-8">
@@ -87,6 +98,23 @@ export default function DashboardPage() {
           <li>Receive a final decision on your appeal and see updated metrics on your dashboard.</li>
         </ol>
       </div>
+
+      <Separator className="my-12" />
+
+      <div className="mt-8 p-6 bg-card rounded-lg shadow-md border border-destructive/50">
+        <h2 className="text-xl font-semibold mb-4 font-headline text-destructive">Admin Actions</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Use these actions for testing or resetting the application state.
+        </p>
+        <Button onClick={handleResetData} variant="destructive" size="sm">
+          <Trash2 className="mr-2 h-4 w-4" />
+          Reset App Data & Reload
+        </Button>
+         <p className="text-xs text-muted-foreground mt-2">
+          This will clear all claims and appeals data from your browser's local storage and reload the application with the initial sample data.
+        </p>
+      </div>
     </div>
   );
 }
+

@@ -104,8 +104,8 @@ export function getRejectedClaims(): Claim[] {
   const storedClaims = getFromStorage<Claim[]>(CLAIMS_STORAGE_KEY, []);
   if (storedClaims.length === 0 || !storedClaims.some(c => c.id === 'CLM005') || !storedClaims.every(claim => 'allocatedAmount' in claim) ) {
     const claimsToStore = initialRejectedClaims.map(claim => ({
-        ...claim, 
-        allocatedAmount: claim.allocatedAmount !== undefined ? claim.allocatedAmount : (claim.claimAmount * 1.2) 
+        ...claim,
+        allocatedAmount: claim.allocatedAmount !== undefined ? claim.allocatedAmount : (claim.claimAmount * 1.2)
     }));
     setToStorage(CLAIMS_STORAGE_KEY, claimsToStore);
     return claimsToStore;
@@ -160,6 +160,15 @@ export function updateAppeal(updatedAppeal: Appeal): void {
   if (index !== -1) {
     appeals[index] = updatedAppeal;
     setToStorage(APPEALS_STORAGE_KEY, appeals);
+  }
+}
+
+export function resetApplicationData(): void {
+  if (typeof window !== 'undefined') {
+    console.log('Resetting application data: Clearing localStorage...');
+    window.localStorage.removeItem(CLAIMS_STORAGE_KEY);
+    window.localStorage.removeItem(APPEALS_STORAGE_KEY);
+    console.log('localStorage cleared.');
   }
 }
 
