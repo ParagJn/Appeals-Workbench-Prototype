@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { UploadCloud, Send, FileText } from 'lucide-react';
+import { UploadCloud, Send, FileText, Hourglass } from 'lucide-react';
 import type { Claim, Appeal } from "@/types";
 import { addAppeal, BPO_AGENTS } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
