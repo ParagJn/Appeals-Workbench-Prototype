@@ -15,11 +15,11 @@ interface DashboardMetrics {
   decisionsMade: number;
 }
 
-function MetricCard({ title, value, icon: Icon, description }: { title: string; value: string | number; icon: React.ElementType; description?: string }) {
+function MetricCard({ title, value, icon: Icon, description, borderColorClass }: { title: string; value: string | number; icon: React.ElementType; description?: string; borderColorClass: string }) {
   return (
-    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <Card className={`shadow-lg hover:shadow-xl transition-shadow duration-300 border-t-4 ${borderColorClass}`}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <CardTitle className="text-sm font-medium text-card-foreground">{title}</CardTitle>
         <Icon className="h-5 w-5 text-muted-foreground" />
       </CardHeader>
       <CardContent>
@@ -59,13 +59,13 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center md:text-left font-headline">ClaimFlow Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center md:text-left font-headline">Appeals Dashboard</h1>
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        <MetricCard title="Total Claims Received" value={metrics.totalClaims} icon={FileText} description="Total claims in the system" />
-        <MetricCard title="Rejected Claims" value={metrics.rejectedClaims} icon={FileX2} description="Claims currently marked as rejected" />
-        <MetricCard title="Appeals In Progress" value={metrics.appealsInProgress} icon={Hourglass} description="Appeals awaiting review or decision" />
-        <MetricCard title="Decisions Made" value={metrics.decisionsMade} icon={CheckCircle2} description="Appeals that have been resolved" />
+        <MetricCard title="Total Claims Received" value={metrics.totalClaims} icon={FileText} description="Total claims in the system" borderColorClass="border-blue-500" />
+        <MetricCard title="Rejected Claims" value={metrics.rejectedClaims} icon={FileX2} description="Claims currently marked as rejected" borderColorClass="border-red-500" />
+        <MetricCard title="Appeals In Progress" value={metrics.appealsInProgress} icon={Hourglass} description="Appeals awaiting review or decision" borderColorClass="border-yellow-500" />
+        <MetricCard title="Decisions Made" value={metrics.decisionsMade} icon={CheckCircle2} description="Appeals that have been resolved" borderColorClass="border-green-500" />
       </div>
 
       <div className="text-center mt-12">

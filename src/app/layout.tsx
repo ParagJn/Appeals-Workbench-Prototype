@@ -5,8 +5,8 @@ import Header from '@/components/Header';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'ClaimFlow',
-  description: 'Insurance Claim Appeal Management System',
+  title: 'Appeals Workbench',
+  description: 'Insurance Appeals Decision System',
 };
 
 export default function RootLayout({
