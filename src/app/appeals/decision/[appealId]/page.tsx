@@ -28,7 +28,7 @@ export default function DecisionPage({ params: paramsAsPromise }: DecisionPagePr
     setError(null);
     setAppeal(null);
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && params.appealId) {
       const foundAppeal = getAppealById(params.appealId);
 
       if (!foundAppeal) {
@@ -37,12 +37,19 @@ export default function DecisionPage({ params: paramsAsPromise }: DecisionPagePr
         return;
       }
       
-      if (foundAppeal.status !== 'Approved' && foundAppeal.status !== 'Rejected' && foundAppeal.status !== 'Info Requested') {
-        setError(`This appeal (ID: ${foundAppeal.id}) is still in status '${foundAppeal.status}'. A final decision has not been made or information is still pending.`);
-        // We still set the appeal to potentially show some info if needed, but error state takes precedence.
+      // Explicitly check for statuses that mean a decision is NOT ready for this page
+      if (foundAppeal.status === 'Pending Validation' || foundAppeal.status === 'Needs Agent Review') {
+        setError(`This appeal (ID: ${foundAppeal.id}) is still in status '${foundAppeal.status}'. A final decision has not been made, or it is still under review.`);
+      } else if (foundAppeal.status !== 'Approved' && foundAppeal.status !== 'Rejected' && foundAppeal.status !== 'Info Requested') {
+        // This case should ideally not be hit if status types are strictly followed
+        setError(`Appeal (ID: ${foundAppeal.id}) has an unexpected or non-final status: '${foundAppeal.status}'.`);
       }
+      // If no error is set above, the status is 'Approved', 'Rejected', or 'Info Requested', which are valid for DecisionDisplayClient
       setAppeal(foundAppeal);
       setIsLoading(false);
+    } else if (typeof window !== 'undefined' && !params.appealId) {
+        setError("Appeal ID is missing in the URL.");
+        setIsLoading(false);
     }
   }, [params.appealId]);
 
@@ -59,6 +66,8 @@ export default function DecisionPage({ params: paramsAsPromise }: DecisionPagePr
      let title = "Decision Not Available";
      if (error.includes("not found")) {
         title = "Error: Appeal Not Found";
+     } else if (error.includes("unexpected or non-final status")) {
+        title = "Error: Invalid Appeal Status";
      }
     return (
       <div className="container mx-auto py-8 text-center">
@@ -90,6 +99,7 @@ export default function DecisionPage({ params: paramsAsPromise }: DecisionPagePr
     );
   }
   
+  // If we reach here, status must be 'Approved', 'Rejected', or 'Info Requested'
   return (
     <div className="container mx-auto py-8">
       <DecisionDisplayClient appeal={appeal} />
