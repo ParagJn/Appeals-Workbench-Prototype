@@ -1,7 +1,10 @@
+
 import type { Claim, Appeal } from '@/types';
 
 const CLAIMS_STORAGE_KEY = 'claimflow_claims';
 const APPEALS_STORAGE_KEY = 'claimflow_appeals';
+
+export const BPO_AGENTS = ["Agent Smith", "Agent Jones", "Agent Brown", "Agent Davis"];
 
 const initialRejectedClaims: Claim[] = [
   {
@@ -44,7 +47,31 @@ const initialRejectedClaims: Claim[] = [
     policyId: 'POL0001',
     claimDetails: 'Claim for invisible jet engine maintenance. Provider: Ares Mechanics. Policy requires Themyscira Certified providers.',
   },
+  {
+    id: 'CLM005',
+    policyHolderName: 'Eva Evergreen',
+    rejectionReason: 'Initially miscategorized, eligible for standard coverage.',
+    claimAmount: 200.00,
+    allocatedAmount: 1000,
+    rejectionDate: new Date('2023-12-10').toISOString(),
+    policyId: 'POL7788',
+    claimDetails: 'Claim for standard dental check-up. Patient ID: P789. Procedure Code: DC001.',
+  },
 ];
+
+const initialAppeals: Appeal[] = [
+  {
+    id: 'APL-SIM001',
+    claimId: 'CLM005', // Linked to the claim designed to pass
+    policyHolderName: 'Eva Evergreen',
+    appealReason: 'This was a standard procedure and should be covered as per my policy. The initial rejection seems to be an error.',
+    supportingDocuments: [{ name: 'dentist_invoice.pdf' }],
+    submissionDate: new Date('2023-12-11T10:00:00Z').toISOString(),
+    status: 'Pending Validation',
+    assignedAgent: BPO_AGENTS[0],
+  },
+];
+
 
 // Utility to safely get data from localStorage
 function getFromStorage<T>(key: string, defaultValue: T): T {
@@ -75,11 +102,10 @@ function setToStorage<T>(key: string, value: T): void {
 
 export function getRejectedClaims(): Claim[] {
   const storedClaims = getFromStorage<Claim[]>(CLAIMS_STORAGE_KEY, []);
-  if (storedClaims.length === 0 || !storedClaims.every(claim => 'allocatedAmount' in claim) ) { // Check if allocatedAmount exists for robust update
-    // Initialize/Update if empty or if old data structure exists
+  if (storedClaims.length === 0 || !storedClaims.some(c => c.id === 'CLM005') || !storedClaims.every(claim => 'allocatedAmount' in claim) ) {
     const claimsToStore = initialRejectedClaims.map(claim => ({
-        ...claim, // spread existing claim data
-        allocatedAmount: claim.allocatedAmount !== undefined ? claim.allocatedAmount : (claim.claimAmount * 1.2) // default if somehow missing in initial
+        ...claim, 
+        allocatedAmount: claim.allocatedAmount !== undefined ? claim.allocatedAmount : (claim.claimAmount * 1.2) 
     }));
     setToStorage(CLAIMS_STORAGE_KEY, claimsToStore);
     return claimsToStore;
@@ -92,7 +118,25 @@ export function getClaimById(id: string): Claim | undefined {
 }
 
 export function getAppeals(): Appeal[] {
-  return getFromStorage<Appeal[]>(APPEALS_STORAGE_KEY, []);
+  const storedAppeals = getFromStorage<Appeal[]>(APPEALS_STORAGE_KEY, []);
+  if (storedAppeals.length === 0 || !storedAppeals.some(a => a.id === 'APL-SIM001')) {
+    // If appeals are empty or our specific simulation appeal isn't there, initialize.
+    // This ensures our simulation appeal is always available on a fresh start.
+    // It might add duplicates if other appeals existed but not APL-SIM001,
+    // but for simulation purposes and to ensure APL-SIM001 is present, this is acceptable.
+    // A more robust approach would merge or check more carefully.
+    const appealsToStore = [...initialAppeals]; // Start with our initial appeal
+    // Add existing appeals that are not the one we are initializing to avoid total wipeout
+    // This is a simple merge, more complex logic might be needed for general purpose.
+    storedAppeals.forEach(sa => {
+      if (!appealsToStore.find(ia => ia.id === sa.id)) {
+        appealsToStore.push(sa);
+      }
+    });
+    setToStorage(APPEALS_STORAGE_KEY, appealsToStore);
+    return appealsToStore;
+  }
+  return storedAppeals;
 }
 
 export function getAppealById(id: string): Appeal | undefined {
@@ -101,7 +145,13 @@ export function getAppealById(id: string): Appeal | undefined {
 
 export function addAppeal(appeal: Appeal): void {
   const appeals = getAppeals();
-  setToStorage(APPEALS_STORAGE_KEY, [...appeals, appeal]);
+  // Prevent adding duplicate by ID
+  if (!appeals.find(a => a.id === appeal.id)) {
+    setToStorage(APPEALS_STORAGE_KEY, [...appeals, appeal]);
+  } else {
+     // Optionally update if it exists, or log a warning. For now, just don't re-add.
+    console.warn(`Appeal with ID ${appeal.id} already exists. Not adding again.`);
+  }
 }
 
 export function updateAppeal(updatedAppeal: Appeal): void {
@@ -113,8 +163,7 @@ export function updateAppeal(updatedAppeal: Appeal): void {
   }
 }
 
-export const BPO_AGENTS = ["Agent Smith", "Agent Jones", "Agent Brown", "Agent Davis"];
-
 export const SAMPLE_POLICY_TERMS = "Policy covers only pre-approved medical procedures. Experimental treatments are excluded. Claims must be submitted within 90 days of service. Out-of-network providers are covered at 50% after deductible, if emergency.";
 export const SAMPLE_COVERAGE_DETAILS = "Covered items: Standard surgical procedures, prescribed medications, emergency room visits. Excluded: Cosmetic surgery, non-prescribed supplements, experimental drugs.";
 export const SAMPLE_PREVIOUS_CLAIMS_HISTORY = "No history of fraudulent claims. Two minor claims in the last 5 years, both approved.";
+
