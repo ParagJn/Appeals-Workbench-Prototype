@@ -30,6 +30,12 @@ export default function Header() {
           >
             Appeals In Progress
           </Link>
+          <Link
+            href="/appeals/decided"
+            className="transition-colors hover:text-foreground/80 text-foreground/60"
+          >
+            Decided Appeals
+          </Link>
         </nav>
       </div>
     </header>
