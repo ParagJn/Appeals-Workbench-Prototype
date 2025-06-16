@@ -39,7 +39,8 @@ export default function AppealReviewClient({ appealFromProps, claimFromProps }: 
             claimDetails: claim.claimDetails || `Claim ID ${claim.id}, Amount: $${claim.claimAmount}, Policy Holder: ${claim.policyHolderName}. Rejection Reason: ${claim.rejectionReason}. Appealed with reason: ${appeal.appealReason}`,
             policyTerms: SAMPLE_POLICY_TERMS,
             coverageDetails: SAMPLE_COVERAGE_DETAILS,
-            costingDetails: `Claim Amount: $${claim.claimAmount}. Submitted for appeal.`,
+            claimedAmount: `$${claim.claimAmount.toFixed(2)}`,
+            allocatedBudget: claim.allocatedAmount,
             previousClaimsHistory: SAMPLE_PREVIOUS_CLAIMS_HISTORY,
           };
           const result = await automatedClaimValidation(validationInput);
@@ -68,7 +69,7 @@ export default function AppealReviewClient({ appealFromProps, claimFromProps }: 
             description: "Could not complete automated validation.",
             variant: "destructive",
           });
-          const errorAppeal = {...appeal, status: 'Needs Agent Review' }; // Fallback to agent review
+          const errorAppeal = {...appeal, status: 'Needs Agent Review' }; 
           updateAppeal(errorAppeal);
           setAppeal(errorAppeal);
         } finally {
@@ -88,7 +89,7 @@ export default function AppealReviewClient({ appealFromProps, claimFromProps }: 
         finalDecisionDate: new Date().toISOString(),
       };
       updateAppeal(finalAppeal);
-      setAppeal(finalAppeal); // Update local state to reflect change immediately
+      setAppeal(finalAppeal); 
 
       toast({
         title: `Appeal ${decision}`,
@@ -96,7 +97,6 @@ export default function AppealReviewClient({ appealFromProps, claimFromProps }: 
         variant: decision === 'Rejected' ? 'destructive' : 'default',
       });
       
-      // Navigate to a decision page or dashboard
       router.push(`/appeals/decision/${appeal.id}`);
 
     } catch (error) {
@@ -111,9 +111,10 @@ export default function AppealReviewClient({ appealFromProps, claimFromProps }: 
     }
   };
 
-  const ValidationIcon = ({ status }: { status: string }) => {
-    if (status.toLowerCase() === 'pass') return <CheckCircle className="h-5 w-5 text-green-500 inline mr-2" />;
-    if (status.toLowerCase() === 'fail') return <XCircle className="h-5 w-5 text-red-500 inline mr-2" />;
+  const ValidationIcon = ({ status }: { status?: string }) => {
+    if (!status) return <Info className="h-5 w-5 text-yellow-500 inline mr-2" />;
+    if (status.toLowerCase().includes('pass')) return <CheckCircle className="h-5 w-5 text-green-500 inline mr-2" />;
+    if (status.toLowerCase().includes('fail')) return <XCircle className="h-5 w-5 text-red-500 inline mr-2" />;
     return <Info className="h-5 w-5 text-yellow-500 inline mr-2" />;
   };
 
@@ -139,7 +140,7 @@ export default function AppealReviewClient({ appealFromProps, claimFromProps }: 
         </CardHeader>
         <CardContent>
           <p>Policy Holder: <strong>{appeal.policyHolderName}</strong></p>
-          <p>Decision Date: <strong>{format(new Date(appeal.finalDecisionDate), 'MM/dd/yyyy HH:mm')}</strong></p>
+          <p>Decision Date: <strong>{appeal.finalDecisionDate ? format(new Date(appeal.finalDecisionDate), 'MM/dd/yyyy HH:mm') : 'N/A'}</strong></p>
           {appeal.agentComments && <p className="mt-2">Agent Comments: <em>{appeal.agentComments}</em></p>}
           {appeal.validationResult && (
             <div className="mt-4 p-4 border rounded-md bg-muted/30">
@@ -158,7 +159,6 @@ export default function AppealReviewClient({ appealFromProps, claimFromProps }: 
 
   return (
     <div className="space-y-6">
-      {/* Claim and Appeal Details */}
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle>Appeal Details - ID: <Badge variant="outline">{appeal.id}</Badge></CardTitle>
@@ -171,6 +171,16 @@ export default function AppealReviewClient({ appealFromProps, claimFromProps }: 
             <h4 className="font-semibold text-sm">Original Rejection Reason:</h4>
             <p className="text-muted-foreground text-sm">{claim.rejectionReason}</p>
           </div>
+           <div>
+            <h4 className="font-semibold text-sm">Claimed Amount:</h4>
+            <p className="text-muted-foreground text-sm">${claim.claimAmount.toFixed(2)}</p>
+          </div>
+          {claim.allocatedAmount !== undefined && (
+            <div>
+              <h4 className="font-semibold text-sm">Allocated Budget for Claim Type:</h4>
+              <p className="text-muted-foreground text-sm">${claim.allocatedAmount.toFixed(2)}</p>
+            </div>
+          )}
           <div>
             <h4 className="font-semibold text-sm">Appeal Reason:</h4>
             <p className="text-muted-foreground text-sm">{appeal.appealReason}</p>
@@ -189,7 +199,6 @@ export default function AppealReviewClient({ appealFromProps, claimFromProps }: 
         </CardContent>
       </Card>
 
-      {/* Automated Validation Section */}
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center"><Bot className="h-6 w-6 mr-2 text-primary" />Automated Validation Results</CardTitle>
@@ -221,7 +230,6 @@ export default function AppealReviewClient({ appealFromProps, claimFromProps }: 
         </CardContent>
       </Card>
 
-      {/* Agent Review Section */}
       {appeal.status === 'Needs Agent Review' && appeal.validationResult && (
         <Card className="shadow-lg">
           <CardHeader>

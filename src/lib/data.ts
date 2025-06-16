@@ -9,6 +9,7 @@ const initialRejectedClaims: Claim[] = [
     policyHolderName: 'Alice Wonderland',
     rejectionReason: 'Procedure not covered under current policy terms.',
     claimAmount: 1250.75,
+    allocatedAmount: 1500,
     rejectionDate: new Date('2023-10-15').toISOString(),
     policyId: 'POL9876',
     claimDetails: 'Claim for experimental heart surgery. Patient ID: P123. Procedure Code: XHS001.',
@@ -18,6 +19,7 @@ const initialRejectedClaims: Claim[] = [
     policyHolderName: 'Bob The Builder',
     rejectionReason: 'Claim submitted past the filing deadline.',
     claimAmount: 300.00,
+    allocatedAmount: 250,
     rejectionDate: new Date('2023-11-01').toISOString(),
     policyId: 'POL5432',
     claimDetails: 'Claim for toolkit replacement due to accidental damage. Incident Date: 2023-05-01. Submitted: 2023-11-01.',
@@ -27,6 +29,7 @@ const initialRejectedClaims: Claim[] = [
     policyHolderName: 'Charlie Brown',
     rejectionReason: 'Insufficient documentation provided to support the claim.',
     claimAmount: 75.50,
+    allocatedAmount: 100,
     rejectionDate: new Date('2023-11-20').toISOString(),
     policyId: 'POL1230',
     claimDetails: 'Claim for a kite repair. Photos of damage were blurry. Invoice not itemized.',
@@ -36,6 +39,7 @@ const initialRejectedClaims: Claim[] = [
     policyHolderName: 'Diana Prince',
     rejectionReason: 'Service provider out of network.',
     claimAmount: 2400.00,
+    allocatedAmount: 3000,
     rejectionDate: new Date('2023-12-05').toISOString(),
     policyId: 'POL0001',
     claimDetails: 'Claim for invisible jet engine maintenance. Provider: Ares Mechanics. Policy requires Themyscira Certified providers.',
@@ -71,10 +75,14 @@ function setToStorage<T>(key: string, value: T): void {
 
 export function getRejectedClaims(): Claim[] {
   const storedClaims = getFromStorage<Claim[]>(CLAIMS_STORAGE_KEY, []);
-  if (storedClaims.length === 0) {
-     // Initialize if empty for demo purposes
-    setToStorage(CLAIMS_STORAGE_KEY, initialRejectedClaims);
-    return initialRejectedClaims;
+  if (storedClaims.length === 0 || !storedClaims.every(claim => 'allocatedAmount' in claim) ) { // Check if allocatedAmount exists for robust update
+    // Initialize/Update if empty or if old data structure exists
+    const claimsToStore = initialRejectedClaims.map(claim => ({
+        ...claim, // spread existing claim data
+        allocatedAmount: claim.allocatedAmount !== undefined ? claim.allocatedAmount : (claim.claimAmount * 1.2) // default if somehow missing in initial
+    }));
+    setToStorage(CLAIMS_STORAGE_KEY, claimsToStore);
+    return claimsToStore;
   }
   return storedClaims;
 }

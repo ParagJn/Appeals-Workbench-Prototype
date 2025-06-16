@@ -84,7 +84,7 @@ export default function AppealForm({ claim }: AppealFormProps) {
           <p>Status: Pending Validation</p>
         </div>
       ),
-      variant: 'default', // Using default for success, accent color is used for positive confirmations as per theme
+      variant: 'default', 
       duration: 7000,
     });
     
@@ -151,7 +151,7 @@ export default function AppealForm({ claim }: AppealFormProps) {
             <FormField
               control={form.control}
               name="supportingDocuments"
-              render={({ field }) => ( // field is not directly used for value, but for error handling etc.
+              render={({ field }) => ( 
                 <FormItem>
                   <FormLabel>Supporting Documents (Optional)</FormLabel>
                   <FormControl>

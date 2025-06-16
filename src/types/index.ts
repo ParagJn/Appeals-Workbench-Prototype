@@ -5,6 +5,7 @@ export interface Claim {
   policyHolderName: string;
   rejectionReason: string;
   claimAmount: number;
+  allocatedAmount?: number; // Added for allocated amount check
   rejectionDate: string; // ISO string
   policyId: string;
   claimDetails: string; // For AI input
