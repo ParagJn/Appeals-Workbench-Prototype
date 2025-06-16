@@ -62,7 +62,7 @@ export default function DashboardPage() {
       <h1 className="text-3xl font-bold mb-8 text-center md:text-left font-headline">ClaimFlow Dashboard</h1>
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        <MetricCard title="Total Claims (Simulated)" value={metrics.totalClaims} icon={FileText} description="Total claims in the system" />
+        <MetricCard title="Total Claims Received" value={metrics.totalClaims} icon={FileText} description="Total claims in the system" />
         <MetricCard title="Rejected Claims" value={metrics.rejectedClaims} icon={FileX2} description="Claims currently marked as rejected" />
         <MetricCard title="Appeals In Progress" value={metrics.appealsInProgress} icon={Hourglass} description="Appeals awaiting review or decision" />
         <MetricCard title="Decisions Made" value={metrics.decisionsMade} icon={CheckCircle2} description="Appeals that have been resolved" />

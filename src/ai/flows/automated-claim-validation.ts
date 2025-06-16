@@ -33,6 +33,7 @@ const AutomatedClaimValidationOutputSchema = z.object({
 export type AutomatedClaimValidationOutput = z.infer<typeof AutomatedClaimValidationOutputSchema>;
 
 export async function automatedClaimValidation(input: AutomatedClaimValidationInput): Promise<AutomatedClaimValidationOutput> {
+  // Call the defined Genkit flow for automated claim validation.
   return automatedClaimValidationFlow(input);
 }
 
@@ -77,7 +78,30 @@ const automatedClaimValidationFlow = ai.defineFlow(
     outputSchema: AutomatedClaimValidationOutputSchema,
   },
   async input => {
+    // Simulate steps and processing time for the verification and validation process.
+    // This delay represents steps like reviewing against policy documents in detail,
+    // adjusting the claim against entitlement based on policy terms, etc.
+
+    // Step 1: Initial claim data ingestion and parsing
+    console.log('Step 1: Initial claim data ingestion and parsing...');
+ await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate 2 seconds
+
+ // Step 2: Reviewing against policy documents
+    console.log('Step 2: Reviewing against policy documents...');
+ await new Promise(resolve => setTimeout(resolve, 3000)); // Simulate 3 seconds
+
+ // Step 3: Checking coverage details and exclusions
+    console.log('Step 3: Checking coverage details and exclusions...');
+ await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate 2 seconds
+
+ // Step 4: Adjusting against entitlement based on policy terms
+    console.log('Step 4: Adjusting against entitlement based on policy terms...');
+ await new Promise(resolve => setTimeout(resolve, 3000)); // Simulate 3 seconds
+ // Total delay is now approximately 10 seconds (2+3+2+3)
+
+    // Call the prompt with the input to get the initial validation results.
     const {output} = await prompt(input);
+    // Return the validated output.
     return output!;
   }
 );

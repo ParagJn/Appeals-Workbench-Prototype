@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AppealReviewClient from '@/components/appeals/AppealReviewClient';
 import { getAppealById, getClaimById } from '@/lib/data';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -16,7 +16,9 @@ interface AppealReviewPageProps {
   };
 }
 
-export default function AppealReviewPage({ params }: AppealReviewPageProps) {
+export default function AppealReviewPage({ params: paramsAsPromise }: AppealReviewPageProps) {
+  const params = React.use(paramsAsPromise); // Unwrap the params promise
+
   const [appeal, setAppeal] = useState<Appeal | null>(null);
   const [claim, setClaim] = useState<Claim | null>(null);
   const [isLoading, setIsLoading] = useState(true);
