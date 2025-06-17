@@ -92,7 +92,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="mt-16 p-6 bg-card rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4 font-headline">How ClaimFlow Works</h2>
+        <h2 className="text-xl font-semibold mb-4 font-headline">Overview of AppealRight AI Agent</h2>
         <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
           <li>View a list of your rejected claims.</li>
           <li>Select a claim and submit an appeal with your reasons and any supporting documents.</li>
