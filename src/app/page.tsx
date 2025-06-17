@@ -70,7 +70,10 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center md:text-left font-headline">Appeals Dashboard</h1>
+      <div className="text-center md:text-left mb-8">
+        <h1 className="text-3xl font-bold font-headline">Appeals Dashboard</h1>
+        <p className="text-sm text-muted-foreground">An agentic framework to manage appeals</p>
+      </div>
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
         <MetricCard title="Total Claims Received" value={metrics.totalClaims} icon={FileText} description="Total claims in the system" borderColorClass="border-blue-500" />
@@ -117,4 +120,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
