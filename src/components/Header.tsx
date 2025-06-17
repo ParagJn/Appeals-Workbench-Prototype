@@ -8,7 +8,7 @@ export default function Header() {
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <ShieldCheck className="h-6 w-6 text-primary" />
           <span className="font-bold sm:inline-block font-headline">
-            ClaimFlow
+            AppealRight AI
           </span>
         </Link>
         <nav className="flex items-center gap-6 text-sm">

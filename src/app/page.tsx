@@ -72,7 +72,7 @@ export default function DashboardPage() {
     <div className="container mx-auto py-8">
       <div className="text-center md:text-left mb-8">
         <h1 className="text-3xl font-bold font-headline">Appeals Dashboard</h1>
-        <p className="text-sm text-muted-foreground underline decoration-red-500">An agentic framework to manage appeals</p>
+        <p className="text-sm text-muted-foreground underline decoration-red-500">An agentic framework transforming appeals from a process into a strategies</p>
       </div>
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
